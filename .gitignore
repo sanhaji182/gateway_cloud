@@ -1,0 +1,10 @@
+# Binaries
+gateway-cloud
+
+# Env
+.env
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
