@@ -1,22 +1,22 @@
 # Gateway Cloud — SaaS Control Plane
 
-> 🇮🇩 [Bahasa Indonesia](./README.id.md)
+> 🇬🇧 [English](./README.md)
 
+
+> **🤖 Dibangun dengan AI** — Project ini dikembangkan dengan bantuan AI code generation sebagai alat bantu, di bawah arahan dan review developer manusia. Setiap baris kode telah diperiksa dan diuji sebelum masuk ke production.
 > **Private repository.** Proprietary. Not open source.
-> See `../gateway/SaaS_ARCHITECTURE.md` for the full architecture blueprint.
+> Lihat `../gateway/SaaS_ARCHITECTURE.md` untuk blueprint arsitektur lengkap.
 
-> **🤖 AI-Assisted Development** — This project was built with AI code generation as a productivity tool, guided and reviewed by a human developer. Every line of code has been verified and tested before reaching production.
+SaaS layer di atas [Gateway Realtime](https://github.com/sanhaji182/gateway_realtime) — core open-source diimpor sebagai Go module via replace directive.
 
-SaaS layer on top of [Gateway Realtime](https://github.com/sanhaji182/gateway_realtime) — the open-source core is imported as a Go module via a replace directive.
-
-## Architecture
+## Arsitektur
 
 ```
 Browser/Backend
       │
       ▼
 ┌──────────────────────────────────────┐
-│  Gateway Cloud (this binary)         │
+│  Gateway Cloud (binary ini)          │
 │  ┌────────────────────────────────┐  │
 │  │  Core Gateway (go-gateway)     │  │ ← Open Source
 │  │  WebSocket / Health / Auth     │  │
@@ -45,11 +45,11 @@ Browser/Backend
     └─────────────┘  └─────────────┘
 ```
 
-## Structure
+## Struktur
 
 ```
 gateway_cloud/            # PRIVATE
-├── cmd/server/main.go    # Cloud binary entrypoint — injects SaaS extensions into core
+├── cmd/server/main.go    # Cloud binary entrypoint — inject SaaS extensions ke core
 ├── cloud/                # SaaS implementations
 │   ├── api.go            # REST endpoints (register, usage, tenant, Stripe webhook)
 │   ├── config.go         # SaaS config loader (core + Stripe + Database)
@@ -68,28 +68,28 @@ gateway_cloud/            # PRIVATE
 ## Quick Start
 
 ```bash
-# 1. Start all services
+# 1. Start semua services
 docker compose -f docker-compose.prod.yml up -d
 
-# 2. Register a tenant — receive an API key
+# 2. Register tenant — dapat API key
 curl -X POST http://localhost:4001/api/cloud/register \
   -H "Content-Type: application/json" \
   -d '{"name": "My SaaS", "email": "dev@example.com"}'
 # → {"tenant":{...}, "api_key":"pk_abc123..."}
 
-# 3. Check tenant usage
+# 3. Cek usage tenant
 curl "http://localhost:4001/api/cloud/usage?tenant_id=<uuid>&period=24h"
 
-# 4. Publish events via WebSocket (using X-Tenant-Key header)
-# (WebSocket connection with tenant header)
+# 4. Publish event via WebSocket (pakai X-Tenant-Key header)
+# (WebSocket connection dengan header tenant)
 ```
 
 ## Plan Tiers
 
-| Tier | Events/Minute | Connections | Pricing (coming soon) |
+| Tier | Events/Menit | Koneksi | Harga (coming soon) |
 |---|---|---|---|
-| **Free** | 100 | 5 | Free |
-| **Pro** | 10,000 | 1,000 | $/month |
+| **Free** | 100 | 5 | Gratis |
+| **Pro** | 10,000 | 1,000 | $/bulan |
 | **Enterprise** | 100,000 | 10,000 | Custom |
 
 ## Build
@@ -98,13 +98,13 @@ curl "http://localhost:4001/api/cloud/usage?tenant_id=<uuid>&period=24h"
 go build -o gateway-cloud ./cmd/server
 ```
 
-## Verification
+## Verifikasi
 
 ```bash
-# Build must succeed
+# Build harus sukses
 go build -o gateway-cloud ./cmd/server
 
-# Binary runs (will fail due to missing env — that's expected)
+# Binary jalan dengan --help (akan gagal karena env kosong — itu normal)
 ./gateway-cloud
 # → DATABASE_URL is required — set PostgreSQL connection string
 ```
@@ -124,10 +124,10 @@ go build -o gateway-cloud ./cmd/server
 
 ## Extension Points
 
-SaaS does not modify the core Gateway. All integration happens through 3 interfaces in `go-gateway/extensions`:
+SaaS tidak memodifikasi core Gateway. Semua integrasi lewat 3 interface di `go-gateway/extensions`:
 
 ```go
-// In cmd/server/main.go:
+// Di cmd/server/main.go:
 mux.Handle("/ws", handler.WSHandler{
     Auth:        tenantAuth,    // TenantAuthenticator
     RateLimiter: planLimiter,   // PlanRateLimiter
@@ -135,18 +135,17 @@ mux.Handle("/ws", handler.WSHandler{
 })
 ```
 
-The core Gateway can be upgraded without conflicts — as long as the interfaces remain unchanged.
-
+Core Gateway tetap bisa di-upgrade tanpa konflik — selama interface tidak berubah.
 
 ## Author
 
-> **Built by [Sonick Sanhaji](https://www.linkedin.com/in/sansanhaji/)** — Software developer. Architected and reviewed. AI-assisted execution.
+> **Dibangun oleh [Sonick Sanhaji](https://www.linkedin.com/in/sansanhaji/)** — Software developer. Arsitektur dan review oleh manusia. Eksekusi dibantu AI.
 
 ## Next Steps
 
-- [ ] Next.js SaaS frontend in `web/` — signup, login, dashboard
-- [ ] Full Stripe integration — webhook verify + plan update
+- [ ] Next.js SaaS frontend di `web/` — signup, login, dashboard
+- [ ] Stripe integration penuh — webhook verify + update plan
 - [ ] Stripe Customer Portal — billing self-service
-- [ ] Email notifications (welcome email, usage warning, payment receipt)
-- [ ] SaaS monitoring dashboard (Grafana)
-- [ ] Private GitHub repo → push this commit
+- [ ] Email notification (welcome email, usage warning, payment receipt)
+- [ ] Monitoring dashboard SaaS (Grafana)
+- [ ] Private GitHub repo → push commit ini
