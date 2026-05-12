@@ -8,3 +8,7 @@ gateway-cloud
 .vscode/
 .idea/
 .DS_Store
+
+# Next.js
+web/.next/
+web/node_modules/
